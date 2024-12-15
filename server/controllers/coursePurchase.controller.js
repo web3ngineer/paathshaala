@@ -1,11 +1,14 @@
-import Stripe from "stripe";
+import Razorpay from "razorpay";
+import crypto from "crypto";
 import { Course } from "../models/course.model.js";
 import { CoursePurchase } from "../models/coursePurchase.model.js";
 import { Lecture } from "../models/lecture.model.js";
 import { User } from "../models/user.model.js";
-import mongoose from "mongoose";
 
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -16,6 +19,10 @@ export const createCheckoutSession = async (req, res) => {
     if (!course) return res.status(404).json({ message: "Course not found!" });
 
     // Create a new course purchase record
+    const purchased = await CoursePurchase.findOne({ userId, courseId, status: "completed" });
+    if (purchased) {
+      return res.status(404).json({ message: "Already Purchased" });
+    }
     const newPurchase = new CoursePurchase({
       courseId,
       userId,
@@ -23,190 +30,160 @@ export const createCheckoutSession = async (req, res) => {
       status: "pending",
     });
 
-    // Create a Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: course.courseTitle,
-              images: [course.courseThumbnail],
-            },
-            unit_amount: course.coursePrice * 100, // Amount in paise (lowest denomination)
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `http://localhost:5173/course-progress/${courseId}`, // once payment successful redirect to course progress page
-      cancel_url: `http://localhost:5173/course-detail/${courseId}`,
-      metadata: {
+    const options = {
+      amount: course.coursePrice * 100, // Amount in paise (lowest denomination)
+      currency: "INR",
+      receipt: `receipt_${newPurchase._id}`,
+      notes: {
         courseId: courseId,
         userId: userId,
       },
-      shipping_address_collection: {
-        allowed_countries: ["IN"], // Optionally restrict allowed countries
-      },
-    });
+    };
 
-    if (!session.url) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Error while creating session" });
+    const order = await razorpay.orders.create(options);
+    console.log("order 215: ", order);
+
+    if (!order) {
+      return res.status(400).json({ success: false, message: "Error while creating order" });
     }
 
     // Save the purchase record
-    newPurchase.paymentId = session.id;
+    newPurchase.paymentId = order.id;
     await newPurchase.save();
 
     return res.status(200).json({
       success: true,
-      url: session.url, // Return the Stripe checkout URL
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const stripeWebhook = async (req, res) => {
-  let event;
-
   try {
-    const payloadString = JSON.stringify(req.body, null, 2);
-    const secret = process.env.WEBHOOK_ENDPOINT_SECRET;
+    console.log("body 239 ", req.body);
 
-    const header = stripe.webhooks.generateTestHeaderString({
-      payload: payloadString,
-      secret,
-    });
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    console.log("1");
 
-    event = stripe.webhooks.constructEvent(payloadString, header, secret);
-  } catch (error) {
-    console.error("Webhook error:", error.message);
-    return res.status(400).send(`Webhook error: ${error.message}`);
-  }
-
-  // Handle the checkout session completed event
-  if (event.type === "checkout.session.completed") {
-    console.log("check session complete is called");
-
-    try {
-      const session = event.data.object;
-
-      const purchase = await CoursePurchase.findOne({
-        paymentId: session.id,
-      }).populate({ path: "courseId" });
-
-      if (!purchase) {
-        return res.status(404).json({ message: "Purchase not found" });
-      }
-
-      if (session.amount_total) {
-        purchase.amount = session.amount_total / 100;
-      }
-      purchase.status = "completed";
-
-      // Make all lectures visible by setting `isPreviewFree` to true
-      if (purchase.courseId && purchase.courseId.lectures.length > 0) {
-        await Lecture.updateMany(
-          { _id: { $in: purchase.courseId.lectures } },
-          { $set: { isPreviewFree: true } }
-        );
-      }
-
-      await purchase.save();
-
-      // Update user's enrolledCourses
-      await User.findByIdAndUpdate(
-        purchase.userId,
-        { $addToSet: { enrolledCourses: purchase.courseId._id } }, // Add course ID to enrolledCourses
-        { new: true }
-      );
-
-      // Update course to add user ID to enrolledStudents
-      await Course.findByIdAndUpdate(
-        purchase.courseId._id,
-        { $addToSet: { enrolledStudents: purchase.userId } }, // Add user ID to enrolledStudents
-        { new: true }
-      );
-    } catch (error) {
-      console.error("Error handling event:", error);
-      return res.status(500).json({ message: "Internal Server Error" });
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    console.log("2");
+    const expectedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET).update(body.toString()).digest("hex");
+    console.log("3");
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({ success: false, message: "Invalid Signature" });
     }
+    console.log("4");
+    // Update the purchase status to completed
+    const purchase = await CoursePurchase.findOne({ paymentId: razorpay_order_id }).populate({
+      path: "courseId",
+    });
+    console.log("5");
+    if (!purchase) {
+      return res.status(404).json({ message: "Purchase not found" });
+    }
+    console.log("6");
+    purchase.status = "completed";
+    await purchase.save();
+
+    // Make all lectures visible by setting `isPreviewFree` to true
+    if (purchase.courseId && purchase.courseId.lectures.length > 0) {
+      await Lecture.updateMany({ _id: { $in: purchase.courseId.lectures } }, { $set: { isPreviewFree: true } });
+    }
+
+    // Update user's enrolledCourses
+    await User.findByIdAndUpdate(purchase.userId, { $addToSet: { enrolledCourses: purchase.courseId._id } }, { new: true });
+
+    // Update course to add user ID to enrolledStudents
+    await Course.findByIdAndUpdate(purchase.courseId._id, { $addToSet: { enrolledStudents: purchase.userId } }, { new: true });
+
+    res.status(200).json({ success: true, message: "Payment verified successfully" });
+  } catch (error) {
+    console.error("Error verifying payment:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-  res.status(200).send();
 };
+
 export const getCourseDetailWithPurchaseStatus = async (req, res) => {
   try {
     const { courseId } = req.params;
     const userId = req.id;
 
-    const course = await Course.findById(courseId)
-      .populate({ path: "creator" })
-      .populate({ path: "lectures" });
-
-    const purchased = await CoursePurchase.findOne({ userId, courseId });
-    console.log(purchased);
+    const course = await Course.findById(courseId).populate({ path: "creator" }).populate({ path: "lectures" });
 
     if (!course) {
-      return res.status(404).json({ message: "course not found!" });
+      return res.status(404).json({ message: "Course not found!" });
     }
+
+    const purchased = await CoursePurchase.findOne({ userId, courseId, status: "completed" });
+
+    console.log("purchase", purchased);
+    if (!purchased || purchased.status != "completed") {
+      return res.status(200).json({
+        course,
+        purchased: false, // true if purchased, false otherwise
+      });
+    }
+    console.log("bhej diya");
 
     return res.status(200).json({
       course,
-      purchased: !!purchased, // true if purchased, false otherwise
+      purchased: true, // true if purchased, false otherwise
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 export const getAllPurchasedCourse = async (req, res) => {
   try {
     const userId = req.id;
-      const purchasedCourse = await CoursePurchase.aggregate([
-        // Match documents with status "completed"
-        {
-          $match: {
-            status: "completed",
-          },
+    const purchasedCourse = await CoursePurchase.aggregate([
+      // Match documents with status "completed"
+      {
+        $match: {
+          status: "completed",
         },
-        // Lookup to join with the Course collection
-        {
-          $lookup: {
-            from: "courses", // Collection name of Course
-            localField: "courseId", // Field in CoursePurchase schema
-            foreignField: "_id", // Field in Course schema
-            as: "courseDetails", // Output array field
-          },
+      },
+      // Lookup to join with the Course collection
+      {
+        $lookup: {
+          from: "courses", // Collection name of Course
+          localField: "courseId", // Field in CoursePurchase schema
+          foreignField: "_id", // Field in Course schema
+          as: "courseDetails", // Output array field
         },
-        // Unwind the courseDetails array to work with individual courses
-        {
-          $unwind: "$courseDetails",
+      },
+      // Unwind the courseDetails array to work with individual courses
+      {
+        $unwind: "$courseDetails",
+      },
+      // Match courses created by the current user
+      {
+        $match: {
+          "courseDetails.creator": new mongoose.Types.ObjectId(userId),
         },
-        // Match courses created by the current user
-        {
-          $match: {
-            "courseDetails.creator": new mongoose.Types.ObjectId(userId),
-          },
+      },
+      // Project only necessary fields
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          amount: 1,
+          paymentId: 1,
+          "courseDetails.courseTitle": 1,
+          "courseDetails.category": 1,
+          "courseDetails.coursePrice": 1,
         },
-        // Project only necessary fields
-        {
-          $project: {
-            _id: 1,
-            userId: 1,
-            amount: 1,
-            paymentId: 1,
-            "courseDetails.courseTitle": 1,
-            "courseDetails.category": 1,
-            "courseDetails.coursePrice": 1,
-          },
-        },
-      ]);
-    
-    console.log("Purchased courses ",purchasedCourse);
+      },
+    ]);
+
+    console.log("Purchased courses ", purchasedCourse);
 
     if (!purchasedCourse) {
       return res.status(404).json({
