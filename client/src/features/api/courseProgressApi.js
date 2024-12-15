@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const COURSE_PROGRESS_API = "http://localhost:3000/api/v1/progress";
+const COURSE_PROGRESS_API = `${import.meta.env.VITE_BACKEND_URL}/progress`;
 
 export const courseProgressApi = createApi({
   reducerPath: "courseProgressApi",
@@ -8,9 +8,9 @@ export const courseProgressApi = createApi({
     baseUrl: COURSE_PROGRESS_API,
     credentials: "include",
   }),
-  endpoints: (builder) => ({
+  endpoints: builder => ({
     getCourseProgress: builder.query({
-      query: (courseId) => ({
+      query: courseId => ({
         url: `/${courseId}`,
         method: "GET",
       }),
@@ -18,28 +18,22 @@ export const courseProgressApi = createApi({
     updateLectureProgress: builder.mutation({
       query: ({ courseId, lectureId }) => ({
         url: `/${courseId}/lecture/${lectureId}/view`,
-        method:"POST"
+        method: "POST",
       }),
     }),
 
     completeCourse: builder.mutation({
-        query:(courseId) => ({
-            url:`/${courseId}/complete`,
-            method:"POST"
-        })
+      query: courseId => ({
+        url: `/${courseId}/complete`,
+        method: "POST",
+      }),
     }),
     inCompleteCourse: builder.mutation({
-        query:(courseId) => ({
-            url:`/${courseId}/incomplete`,
-            method:"POST"
-        })
+      query: courseId => ({
+        url: `/${courseId}/incomplete`,
+        method: "POST",
+      }),
     }),
-    
   }),
 });
-export const {
-useGetCourseProgressQuery,
-useUpdateLectureProgressMutation,
-useCompleteCourseMutation,
-useInCompleteCourseMutation
-} = courseProgressApi;
+export const { useGetCourseProgressQuery, useUpdateLectureProgressMutation, useCompleteCourseMutation, useInCompleteCourseMutation } = courseProgressApi;

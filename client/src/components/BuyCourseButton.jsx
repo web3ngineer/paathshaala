@@ -22,7 +22,7 @@ const BuyCourseButton = ({ courseId }) => {
           description: session.description || "Complete your course purchase",
           handler: async response => {
             try {
-              const verifyResponse = await fetch(`http://localhost:3000/api/v1/purchase/webhook`, {
+              const verifyResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/purchase/webhook`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
