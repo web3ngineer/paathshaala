@@ -32,7 +32,9 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/purchase", purchaseRoute);
 app.use("/api/v1/progress", courseProgressRoute);
- 
+app.use("/healthcheck", (_, res) => {
+    res.status(200).json({ status: "OK", message: "Server is running smoothly!" });
+});
  
 app.listen(PORT, () => {
     console.log(`Server listen at port ${PORT}`);

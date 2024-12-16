@@ -31,7 +31,7 @@ const Navbar = () => {
       {/* Desktop */}
       <div className="items-center justify-between hidden h-full gap-10 mx-auto max-w-7xl md:flex">
         <div className="flex items-center gap-2">
-          <School size={"30"}  className="text-blue-600"/>
+          {/* <School size={"30"}  className="text-blue-600"/> */}
           <Link to="/">
             <h1 className="hidden text-2xl font-extrabold md:block">Paathshaala</h1>
           </Link>

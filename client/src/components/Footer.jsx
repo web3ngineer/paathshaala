@@ -18,7 +18,7 @@ function Footer() {
       <div className="max-w-screen-xl p-10 mx-auto">
         <div className="flex flex-col gap-2 md:flex-row ">
         <div className="flex items-center gap-2">
-        <School size={"30"} className="text-blue-600" />
+        {/* <School size={"30"} className="text-blue-600" /> */}
         <h3 className="text-3xl font-extrabold">
             Paathshaala
         </h3>

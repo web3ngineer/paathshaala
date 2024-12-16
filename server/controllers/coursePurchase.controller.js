@@ -43,7 +43,7 @@ export const createCheckoutSession = async (req, res) => {
     };
 
     const order = await razorpay.orders.create(options);
-    console.log("order 215: ", order);
+    // console.log("order 215: ", order);
 
     if (!order) {
       return res.status(400).json({ success: false, message: "Error while creating order" });
@@ -67,7 +67,7 @@ export const createCheckoutSession = async (req, res) => {
 
 export const stripeWebhook = async (req, res) => {
   try {
-    console.log("body 239 ", req.body);
+    // console.log("body 239 ", req.body);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
     // console.log("1");
@@ -127,7 +127,7 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
 
     const purchased = await CoursePurchase.findOne({ userId, courseId, status: "completed" });
 
-    console.log("purchase", purchased);
+    // console.log("purchase", purchased);
     if (!purchased || purchased.status != "completed") {
       return res.status(200).json({
         course,
