@@ -3,10 +3,11 @@ import { Button } from "./ui/button";
 import { useCreateCheckoutSessionMutation } from "@/features/api/purchaseApi";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const BuyCourseButton = ({ courseId }) => {
   const [createCheckoutSession, { data, isLoading, isSuccess, isError, error }] = useCreateCheckoutSessionMutation();
-
+  const { user } = useSelector(store => store.auth);
   const purchaseCourseHandler = async () => {
     try {
       const session = await createCheckoutSession(courseId).unwrap();
@@ -28,6 +29,7 @@ const BuyCourseButton = ({ courseId }) => {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
+                  user,
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,

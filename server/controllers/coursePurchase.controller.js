@@ -5,6 +5,7 @@ import { CoursePurchase } from "../models/coursePurchase.model.js";
 import { Lecture } from "../models/lecture.model.js";
 import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
+import sendPaymentConfirmation from "../utils/resend.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -91,6 +92,10 @@ export const stripeWebhook = async (req, res) => {
     purchase.status = "completed";
     await purchase.save();
 
+    await sendPaymentConfirmation({
+      user: req.body.user,
+      paymentInfo: { razorpay_order_id, razorpay_payment_id, amount: purchase.amount },
+    });
     // Make all lectures visible by setting `isPreviewFree` to true
     if (purchase.courseId && purchase.courseId.lectures.length > 0) {
       await Lecture.updateMany({ _id: { $in: purchase.courseId.lectures } }, { $set: { isPreviewFree: true } });
