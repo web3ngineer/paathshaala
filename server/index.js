@@ -32,7 +32,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/purchase", purchaseRoute);
 app.use("/api/v1/progress", courseProgressRoute);
-app.use("api/v1/healthcheck", (_, res) => {
+app.get("/api/v1/healthcheck", (_, res) => {
     res.status(200).json({ status: "OK", message: "Server is running smoothly!" });
 });
  
