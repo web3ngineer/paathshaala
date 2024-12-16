@@ -184,7 +184,7 @@ export const getAllPurchasedCourse = async (req, res) => {
       },
     ]);
 
-    console.log("Purchased courses ", purchasedCourse);
+    // console.log("Purchased courses ", purchasedCourse);
 
     if (!purchasedCourse) {
       return res.status(404).json({

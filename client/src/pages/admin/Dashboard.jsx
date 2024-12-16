@@ -1,5 +1,7 @@
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetPurchasedCoursesQuery } from "@/features/api/purchaseApi";
+import { Loader2 } from "lucide-react";
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -7,8 +9,16 @@ const Dashboard = () => {
 
   const {data, isSuccess, isError, isLoading} = useGetPurchasedCoursesQuery();
 
-  if(isLoading) return <h1>Loading...</h1>
-  if(isError) return <h1 className="text-red-500">Failed to get purchased course</h1>
+  if(isLoading){
+    return (
+      <div className="flex items-center justify-center mt-40">
+        Loading... <Loader2 className="w-5 h-5 text-blue-600 animate-spin"/>
+        {/* <LoadingSpinner className="w-5 h-5 text-blue-600 animate-spin"/> */}
+      </div>
+    )
+  }
+
+  if(isError) return <h1 className="flex items-center justify-center text-red-500 ">Failed to get purchased course</h1>
 
   //
   const {purchasedCourse} = data || [];
