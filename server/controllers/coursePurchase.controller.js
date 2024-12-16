@@ -70,25 +70,25 @@ export const stripeWebhook = async (req, res) => {
     console.log("body 239 ", req.body);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    console.log("1");
+    // console.log("1");
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
-    console.log("2");
+    // console.log("2");
     const expectedSignature = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET).update(body.toString()).digest("hex");
-    console.log("3");
+    // console.log("3");
     if (expectedSignature !== razorpay_signature) {
       return res.status(400).json({ success: false, message: "Invalid Signature" });
     }
-    console.log("4");
+    // console.log("4");
     // Update the purchase status to completed
     const purchase = await CoursePurchase.findOne({ paymentId: razorpay_order_id }).populate({
       path: "courseId",
     });
-    console.log("5");
+    // console.log("5");
     if (!purchase) {
       return res.status(404).json({ message: "Purchase not found" });
     }
-    console.log("6");
+    // console.log("6");
     purchase.status = "completed";
     await purchase.save();
 
@@ -134,7 +134,7 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
         purchased: false, // true if purchased, false otherwise
       });
     }
-    console.log("bhej diya");
+    // console.log("bhej diya");
 
     return res.status(200).json({
       course,
@@ -189,7 +189,7 @@ export const getAllPurchasedCourse = async (req, res) => {
       },
     ]);
 
-    console.log("Purchased courses ", purchasedCourse);
+    // console.log("Purchased courses ", purchasedCourse);
 
     if (!purchasedCourse) {
       return res.status(404).json({

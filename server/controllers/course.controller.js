@@ -238,6 +238,7 @@ export const editLecture = async (req, res) => {
     const { courseId, lectureId } = req.params;
     const videoFile = req.file;
 
+    // Fetch the lecture by its ID
     const lecture = await Lecture.findById(lectureId);
     if (!lecture) {
       return res.status(404).json({
@@ -245,43 +246,55 @@ export const editLecture = async (req, res) => {
       });
     }
 
-    const result = await uploadMedia(videoFile.path);
-    // console.log("Result", result);
+    let result;
 
-    await deleteVideoFromCloudinary(lecture.publicId);
+    // Check if a new video file is provided for upload
+    if (videoFile) {
+      // Upload new video and delete the old one from Cloudinary
+      result = await uploadMedia(videoFile.path);
 
-    if (!result) {
-      return res.status(400).json({
-        message: "Failed to upload media",
-        success: false,
-      });
+      if (!result) {
+        return res.status(400).json({
+          message: "Failed to upload media",
+          success: false,
+        });
+      }
+
+      // Delete the previous video from Cloudinary
+      if (lecture.publicId) {
+        await deleteVideoFromCloudinary(lecture.publicId);
+      }
+
+      // Update video-related fields
+      lecture.videoUrl = result.url;
+      lecture.publicId = result.public_id;
     }
 
-    // update lecture
+    // Update other fields
     if (lectureTitle) lecture.lectureTitle = lectureTitle;
-    lecture.videoUrl = result.url;
-    lecture.publicId = result.public_id;
-    lecture.isPreviewFree = isPreviewFree;
+    if (isPreviewFree !== undefined) lecture.isPreviewFree = isPreviewFree;
 
     await lecture.save();
 
-    // Ensure the course still has the lecture id if it was not aleardy added;
+    // Ensure the course still references the lecture ID
     const course = await Course.findById(courseId);
     if (course && !course.lectures.includes(lecture._id)) {
       course.lectures.push(lecture._id);
       await course.save();
     }
+
     return res.status(200).json({
       lecture,
       message: "Lecture updated successfully.",
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).json({
-      message: "Failed to edit lectures",
+      message: "Failed to edit lecture.",
     });
   }
 };
+
 export const removeLecture = async (req, res) => {
   try {
     const { lectureId } = req.params;

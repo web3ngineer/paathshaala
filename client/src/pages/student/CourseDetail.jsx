@@ -1,4 +1,5 @@
 import BuyCourseButton from "@/components/BuyCourseButton";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,8 +23,8 @@ const CourseDetail = () => {
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
 
-  if (isLoading) return <h1>Loading...</h1>;
-  if (isError) return <h>Failed to load course details</h>;
+  if (isLoading) return <LoadingSpinner />;
+  if (isError) return <h className="flex items-center justify-center" >Failed to load course details</h>;
 
   const { course, purchased } = data;
   console.log(purchased);
@@ -65,7 +66,7 @@ const CourseDetail = () => {
           <Card>
             <CardHeader>
               <CardTitle>Course Content</CardTitle>
-              <CardDescription>4 lectures</CardDescription>
+              <CardDescription>{course.lectures.length} lectures</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {course.lectures.map((lecture, idx) => (
