@@ -1,20 +1,10 @@
 // McgPr7oX7v1mMcbN
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  useLoginUserMutation,
-  useRegisterUserMutation,
-} from "@/features/api/authApi";
+import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,24 +18,8 @@ const Login = () => {
   });
   const [loginInput, setLoginInput] = useState({ email: "", password: "" });
 
-  const [
-    registerUser,
-    {
-      data: registerData,
-      error: registerError,
-      isLoading: registerIsLoading,
-      isSuccess: registerIsSuccess,
-    },
-  ] = useRegisterUserMutation();
-  const [
-    loginUser,
-    {
-      data: loginData,
-      error: loginError,
-      isLoading: loginIsLoading,
-      isSuccess: loginIsSuccess,
-    },
-  ] = useLoginUserMutation();
+  const [registerUser, { data: registerData, error: registerError, isLoading: registerIsLoading, isSuccess: registerIsSuccess }] = useRegisterUserMutation();
+  const [loginUser, { data: loginData, error: loginError, isLoading: loginIsLoading, isSuccess: loginIsSuccess }] = useLoginUserMutation();
   const navigate = useNavigate();
 
   const changeInputHandler = (e, type) => {
@@ -57,34 +31,27 @@ const Login = () => {
     }
   };
 
-  const handleRegistration = async (type) => {
+  const handleRegistration = async type => {
     const inputData = type === "signup" ? signupInput : loginInput;
     const action = type === "signup" ? registerUser : loginUser;
     await action(inputData);
   };
 
   useEffect(() => {
-    if(registerIsSuccess && registerData){
-      toast.success(registerData.message || "Signup successful.")
+    if (registerIsSuccess && registerData) {
+      toast.success(registerData?.message || "Signup successful.");
     }
-    if(registerError){
-      toast.error(registerError.data.message || "Signup Failed");
+    if (registerError) {
+      toast.error(registerError.data?.message || "Signup Failed");
     }
-    if(loginIsSuccess && loginData){
-      toast.success(loginData.message || "Login successful.");
+    if (loginIsSuccess && loginData) {
+      toast.success(loginData?.message || "Login successful.");
       navigate("/");
     }
-    if(loginError){ 
-      toast.error(loginError.data.message || "login Failed");
+    if (loginError) {
+      toast.error(loginError.data?.message || "login Failed");
     }
-  }, [
-    loginIsLoading,
-    registerIsLoading,
-    loginData,
-    registerData,
-    loginError,
-    registerError,
-  ]);
+  }, [loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError]);
 
   return (
     <div className="flex items-center justify-center w-full my-44">
@@ -97,9 +64,7 @@ const Login = () => {
           <Card>
             <CardHeader>
               <CardTitle>Signup</CardTitle>
-              <CardDescription>
-                Create a new account and click signup when you're done.
-              </CardDescription>
+              <CardDescription>Create a new account and click signup when you're done.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="space-y-1">
@@ -108,7 +73,7 @@ const Login = () => {
                   type="text"
                   name="name"
                   value={signupInput.name}
-                  onChange={(e) => changeInputHandler(e, "signup")}
+                  onChange={e => changeInputHandler(e, "signup")}
                   placeholder="Eg. pathshala"
                   required="true"
                 />
@@ -119,7 +84,7 @@ const Login = () => {
                   type="email"
                   name="email"
                   value={signupInput.email}
-                  onChange={(e) => changeInputHandler(e, "signup")}
+                  onChange={e => changeInputHandler(e, "signup")}
                   placeholder="Eg. pathshala@gmail.com"
                   required="true"
                 />
@@ -130,7 +95,7 @@ const Login = () => {
                   type="password"
                   name="password"
                   value={signupInput.password}
-                  onChange={(e) => changeInputHandler(e, "signup")}
+                  onChange={e => changeInputHandler(e, "signup")}
                   placeholder="Eg. xyz"
                   required="true"
                 />
@@ -143,8 +108,7 @@ const Login = () => {
               >
                 {registerIsLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Please
-                    wait
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Please wait
                   </>
                 ) : (
                   "Signup"
@@ -157,9 +121,7 @@ const Login = () => {
           <Card>
             <CardHeader>
               <CardTitle>Login</CardTitle>
-              <CardDescription>
-                Login your password here. After signup, you'll be logged in.
-              </CardDescription>
+              <CardDescription>Login your password here. After signup, you'll be logged in.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="space-y-1">
@@ -168,7 +130,7 @@ const Login = () => {
                   type="email"
                   name="email"
                   value={loginInput.email}
-                  onChange={(e) => changeInputHandler(e, "login")}
+                  onChange={e => changeInputHandler(e, "login")}
                   placeholder="Eg. pathshala@gmail.com"
                   required="true"
                 />
@@ -179,7 +141,7 @@ const Login = () => {
                   type="password"
                   name="password"
                   value={loginInput.password}
-                  onChange={(e) => changeInputHandler(e, "login")}
+                  onChange={e => changeInputHandler(e, "login")}
                   placeholder="Eg. xyz"
                   required="true"
                 />
@@ -192,8 +154,7 @@ const Login = () => {
               >
                 {loginIsLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Please
-                    wait
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Please wait
                   </>
                 ) : (
                   "Login"
