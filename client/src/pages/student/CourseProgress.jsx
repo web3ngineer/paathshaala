@@ -8,7 +8,7 @@ import {
   useUpdateLectureProgressMutation,
 } from "@/features/api/courseProgressApi";
 import { CheckCircle, CheckCircle2, CirclePlay } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -78,7 +78,7 @@ const CourseProgress = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="p-4 mx-auto max-w-7xl">
       {/* Display course name  */}
       <div className="flex justify-between mb-4">
         <h1 className="text-2xl font-bold">{courseTitle}</h1>
@@ -88,7 +88,7 @@ const CourseProgress = () => {
         >
           {completed ? (
             <div className="flex items-center">
-              <CheckCircle className="h-4 w-4 mr-2" /> <span>Completed</span>{" "}
+              <CheckCircle className="w-4 h-4 mr-2" /> <span>Completed</span>{" "}
             </div>
           ) : (
             "Mark as completed"
@@ -96,9 +96,9 @@ const CourseProgress = () => {
         </Button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col gap-6 md:flex-row">
         {/* Video section  */}
-        <div className="flex-1 md:w-3/5 h-fit rounded-lg shadow-lg p-4">
+        <div className="flex-1 p-4 rounded-lg shadow-lg md:w-3/5 h-fit">
           <div>
             <video
               src={currentLecture?.videoUrl || initialLecture.videoUrl}
@@ -111,7 +111,7 @@ const CourseProgress = () => {
           </div>
           {/* Display current watching lecture title */}
           <div className="mt-2 ">
-            <h3 className="font-medium text-lg">
+            <h3 className="text-lg font-medium">
               {`Lecture ${
                 courseDetails.lectures.findIndex(
                   (lec) =>
@@ -124,8 +124,8 @@ const CourseProgress = () => {
           </div>
         </div>
         {/* Lecture Sidebar  */}
-        <div className="flex flex-col w-full md:w-2/5 border-t md:border-t-0 md:border-l border-gray-200 md:pl-4 pt-4 md:pt-0">
-          <h2 className="font-semibold text-xl mb-4">Course Lecture</h2>
+        <div className="flex flex-col w-full pt-4 border-t border-gray-200 md:w-2/5 md:border-t-0 md:border-l md:pl-4 md:pt-0">
+          <h2 className="mb-4 text-xl font-semibold">Course Lecture</h2>
           <div className="flex-1 overflow-y-auto">
             {courseDetails?.lectures.map((lecture) => (
               <Card
@@ -140,9 +140,9 @@ const CourseProgress = () => {
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center">
                     {isLectureCompleted(lecture._id) ? (
-                      <CheckCircle2 size={24} className="text-green-500 mr-2" />
+                      <CheckCircle2 size={24} className="mr-2 text-green-500" />
                     ) : (
-                      <CirclePlay size={24} className="text-gray-500 mr-2" />
+                      <CirclePlay size={24} className="mr-2 text-gray-500" />
                     )}
                     <div>
                       <CardTitle className="text-lg font-medium">
@@ -153,7 +153,7 @@ const CourseProgress = () => {
                   {isLectureCompleted(lecture._id) && (
                     <Badge
                       variant={"outline"}
-                      className="bg-green-200 text-green-600"
+                      className="text-green-600 bg-green-200"
                     >
                       Completed
                     </Badge>

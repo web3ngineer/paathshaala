@@ -12,22 +12,26 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useGetCourseDetailWithStatusQuery } from "@/features/api/purchaseApi";
 import { BadgeInfo, Lock, PlayCircle } from "lucide-react";
-import React from "react";
+
 import ReactPlayer from "react-player";
 import { useNavigate, useParams } from "react-router-dom";
 
 const CourseDetail = () => {
   const params = useParams();
-  const courseId = params.courseId;
+  const { courseId }= params;
   const navigate = useNavigate();
   const { data, isLoading, isError } =
     useGetCourseDetailWithStatusQuery(courseId);
 
-  if (isLoading) return <LoadingSpinner />;
-  if (isError) return <h className="flex items-center justify-center" >Failed to load course details</h>;
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+  if (isError) {
+    return <h className="flex items-center justify-center" >Failed to load course details</h>;
+  }
 
   const { course, purchased } = data;
-  console.log(purchased);
+  // console.log(purchased);
 
   const handleContinueCourse = () => {
     if(purchased){

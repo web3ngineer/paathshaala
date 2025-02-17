@@ -17,7 +17,7 @@ const LoadingSpinner = () => {
       <FaSpinner className="w-16 h-16 text-blue-600 animate-spin" />
       <p className="mt-4 text-lg font-semibold text-gray-700">Loading, please wait...</p>
       {showMessage && (
-        <p className="mt-2 text-md text-gray-600">
+        <p className="px-4 mt-2 text-center text-gray-600 text-md">
           Our free server is currently waking up, which may take a few moments. Please be patient while we get things up and running. Thank you for your understanding!
         </p>
       )}

@@ -51,7 +51,7 @@ const Login = () => {
     if (loginError) {
       toast.error(loginError.data?.message || "login Failed");
     }
-  }, [loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError]);
+  }, [registerIsSuccess,loginIsSuccess,navigate, loginIsLoading, registerIsLoading, loginData, registerData, loginError, registerError]);
 
   return (
     <div className="flex items-center justify-center w-full my-44">
@@ -74,7 +74,7 @@ const Login = () => {
                   name="name"
                   value={signupInput.name}
                   onChange={e => changeInputHandler(e, "signup")}
-                  placeholder="Eg. pathshala"
+                  placeholder="Eg. paathshaala"
                   required="true"
                 />
               </div>

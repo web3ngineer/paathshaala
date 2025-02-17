@@ -48,7 +48,7 @@ const Filter = ({ handleFilterChange }) => {
   return (
     <div className="w-full md:w-[20%]">
       <div className="flex items-center justify-between">
-        <h1 className="font-semibold text-lg md:text-xl">Filter Options</h1>
+        <h1 className="text-lg font-semibold md:text-xl">Filter Options</h1>
         <Select onValueChange={selectByPriceHandler}>
           <SelectTrigger>
             <SelectValue placeholder="Sort by" />
@@ -64,9 +64,9 @@ const Filter = ({ handleFilterChange }) => {
       </div>
       <Separator className="my-4" />
       <div>
-        <h1 className="font-semibold mb-2">CATEGORY</h1>
+        <h1 className="mb-2 font-semibold">CATEGORY</h1>
         {categories.map((category) => (
-          <div className="flex items-center space-x-2 my-2">
+          <div key={category.id} className="flex items-center my-2 space-x-2">
             <Checkbox
               id={category.id}
               onCheckedChange={() => handleCategoryChange(category.id)}

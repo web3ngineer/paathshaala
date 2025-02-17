@@ -38,6 +38,6 @@ app.get("/api/v1/healthcheck", (_, res) => {
  
 app.listen(PORT, () => {
     console.log(`Server listen at port ${PORT}`);
-})
+});
 
 
