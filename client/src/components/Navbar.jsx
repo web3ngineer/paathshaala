@@ -74,13 +74,13 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={() => navigate("/login")}
               >
                 Login
-              </Button>
-              <Button onClick={() => navigate("/login")}>Signup</Button>
+              </Button> */}
+              <Button onClick={() => navigate("/login")}>Join us</Button>
             </div>
           )}
           <DarkMode />
