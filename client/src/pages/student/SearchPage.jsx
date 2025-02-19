@@ -26,15 +26,16 @@ const SearchPage = () => {
     setSortByPrice(price);
   };
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8">
-      <div className="my-6">
+    <div className="p-4 mx-auto max-w-7xl md:p-8">
+      <Link to="/" className="mb-2 text-sm underline"> {'<-'} Back to Home</Link>
+      <div className="mb-6">
         {query && (
           <p>
-            Showing results for <span className="text-blue-800 font-bold italic">{query}</span>
+            Showing results for <span className="italic font-bold text-blue-800">{query}</span>
           </p>
         )}
       </div>
-      <div className="flex flex-col md:flex-row gap-10">
+      <div className="flex flex-col gap-10 md:flex-row">
         <Filter handleFilterChange={handleFilterChange} />
         <div className="flex-1">
           {isLoading ? (
@@ -59,10 +60,10 @@ export default SearchPage;
 
 const CourseNotFound = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-32 dark:bg-gray-900 p-6">
-      <AlertCircle className="text-red-500 h-16 w-16 mb-4" />
-      <h1 className="font-bold text-2xl md:text-4xl text-gray-800 dark:text-gray-200 mb-2">Course Not Found</h1>
-      <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">Sorry, we couldn't find the course you're looking for.</p>
+    <div className="flex flex-col items-center justify-center p-6 min-h-32 dark:bg-gray-900">
+      <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
+      <h1 className="mb-2 text-2xl font-bold text-gray-800 md:text-4xl dark:text-gray-200">Course Not Found</h1>
+      <p className="mb-4 text-lg text-gray-600 dark:text-gray-400">Sorry, we couldn't find the course you're looking for.</p>
       <Link
         to="/"
         className="italic"
@@ -75,22 +76,22 @@ const CourseNotFound = () => {
 
 const CourseSkeleton = () => {
   return (
-    <div className="flex-1 flex flex-col md:flex-row justify-between border-b border-gray-300 py-4">
-      <div className="h-32 w-full md:w-64">
-        <Skeleton className="h-full w-full object-cover" />
+    <div className="flex flex-col justify-between flex-1 py-4 border-b border-gray-300 md:flex-row">
+      <div className="w-full h-32 md:w-64">
+        <Skeleton className="object-cover w-full h-full" />
       </div>
 
-      <div className="flex flex-col gap-2 flex-1 px-4">
-        <Skeleton className="h-6 w-3/4" />
-        <Skeleton className="h-4 w-1/2" />
+      <div className="flex flex-col flex-1 gap-2 px-4">
+        <Skeleton className="w-3/4 h-6" />
+        <Skeleton className="w-1/2 h-4" />
         <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="w-1/3 h-4" />
         </div>
-        <Skeleton className="h-6 w-20 mt-2" />
+        <Skeleton className="w-20 h-6 mt-2" />
       </div>
 
       <div className="flex flex-col items-end justify-between mt-4 md:mt-0">
-        <Skeleton className="h-6 w-12" />
+        <Skeleton className="w-12 h-6" />
       </div>
     </div>
   );
