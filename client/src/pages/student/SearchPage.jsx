@@ -27,7 +27,7 @@ const SearchPage = () => {
   };
   return (
     <div className="p-4 mx-auto max-w-7xl md:p-8">
-      <Link to="/" className="mb-2 text-sm underline"> {'<-'} Back to Home</Link>
+      <Link to="/" className="mb-2 text-sm font-semibold"> {'<-'} <p className="inline hover:underline">Back to Home</p></Link>
       <div className="mb-6">
         {query && (
           <p>

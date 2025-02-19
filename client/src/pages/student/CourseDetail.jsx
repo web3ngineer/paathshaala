@@ -95,9 +95,9 @@ const CourseDetail = () => {
                   controls={true}
                 />
               </div>
-              <h1>Lecture title</h1>
+              <div><h1 className="text-xl font-semibold md:text-x">Lecture title:</h1> {course.lectures[0].lectureTitle}</div>
               <Separator className="my-2" />
-              <h1 className="text-lg font-semibold md:text-xl">Course Price</h1>
+              <h1 className="text-lg font-semibold md:text-xl">{"₹"}{course.coursePrice}</h1>
             </CardContent>
             <CardFooter className="flex justify-center p-4">
               {purchased ? (
