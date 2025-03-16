@@ -1,5 +1,5 @@
 # Paathshaala (e-Learning Platform)
----
+
 ## [PaathShaala](https://paathshaala.web3ngineer.in)  
 **Tech Stack:** React, Express, MongoDB, Razorpay, Resend, Cloudinary, JWT  
 
