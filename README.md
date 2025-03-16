@@ -1,6 +1,6 @@
 # Paathshaala (e-Learning Platform)
 
-## [PaathShaala](https://paathshaala.web3ngineer.in)  
+### [Live Link](https://paathshaala.web3ngineer.in)  
 **Tech Stack:** React, Express, MongoDB, Razorpay, Resend, Cloudinary, JWT  
 
 - Developed an **E-learning Platform** using **React** and **Express.js** with **MongoDB** as the database.  
